@@ -40,7 +40,7 @@ set(common_compiler_flags
     -march=${target_arch}              # Selects the target CPU.
     -mabi=${target_abi}                # Selects target ABI 
     -nodefaultlibs                     # Do not link any default libraries like libgcc or libc.
-    -O2                                # Optimize the code.
+    -Os                                # Optimize the code.
     -ggdb                              # Generate debug information in default extended format.
     -fsanitize=undefined               # Adds sanitizer for undefined behaviour.
     -fsanitize-undefined-trap-on-error # Invoke a trap instruction instead of calling into the UBsan runtime.
@@ -66,6 +66,7 @@ add_executable(${target}
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/badge_err.c
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/badge_format_str.c
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/badge_strings.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/int_routines.c
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/log.c
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/num_to_str.c
     ${CMAKE_CURRENT_LIST_DIR}/src/media/xip.c
