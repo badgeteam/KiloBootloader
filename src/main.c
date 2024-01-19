@@ -6,15 +6,12 @@
 #include "memprotect.h"
 #include "port/interrupt.h"
 #include "time.h"
+#include "xip.h"
 
 #include <stdatomic.h>
 
-
-
-// The initial kernel stack.
-extern char          stack_bottom[] asm("__stack_bottom");
-extern char          stack_top[] asm("__stack_top");
-
+// ISR context.
+static isr_ctx_t isr_ctx;
 
 #define show_csr(name)                                                                                                 \
     do {                                                                                                               \
@@ -28,10 +25,9 @@ extern char          stack_top[] asm("__stack_top");
 // When finished, the booting CPU will perform kernel initialization.
 void basic_runtime_init() {
     badge_err_t ec = {0};
-    isr_ctx_t   tmp_ctx;
 
     // ISR initialization.
-    interrupt_init(&tmp_ctx);
+    interrupt_init(&isr_ctx);
     // Early platform initialization.
     // port_early_init();
 
@@ -43,4 +39,9 @@ void basic_runtime_init() {
 
     // Full hardware initialization.
     // port_init();
+
+    // Dump XIP mappings.
+    xip_dump();
+
+    while (1) continue;
 }

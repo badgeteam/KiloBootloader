@@ -9,6 +9,5 @@
 
 // Initialise memory protection driver.
 void memprotect_init() {
-    // Initialise PMP driver.
-    riscv_pmp_init();
+    // There are no memory protections to enable that can also be disabled.
 }

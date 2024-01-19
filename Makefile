@@ -47,4 +47,4 @@ flash: build
 
 monitor:
 	echo -e "\033[1mType ^A^X to exit.\033[0m"
-	picocom -q -b 115200 $(PORT) | ../tools/address-filter.py "$(OUTPUT)/kbbl.elf"; echo -e '\033[0m'
+	picocom -q -b 115200 $(PORT) | ./tools/address-filter.py "$(OUTPUT)/kbbl.elf"; echo -e '\033[0m'

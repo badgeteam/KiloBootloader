@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "port/xip.h"
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -17,10 +19,12 @@ typedef struct {
     size_t length;
     // Region enabled.
     bool   enable;
-    // Execute permission.
-    bool   x;
+    // Read permission.
+    bool   r;
     // Write permission.
     bool   w;
+    // Execute permission.
+    bool   x;
 } xip_entry_t;
 
 // Get XIP base address.
@@ -36,4 +40,6 @@ size_t      xip_regions();
 // Get XIP region.
 xip_entry_t xip_get(size_t index);
 // Set XIP region.
-void        xip_set(size_t index);
+void        xip_set(size_t index, xip_entry_t value);
+// Debug: Dump XIP regions.
+void        xip_dump();
