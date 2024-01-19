@@ -40,7 +40,7 @@ set(common_compiler_flags
     -march=${target_arch}              # Selects the target CPU.
     -mabi=${target_abi}                # Selects target ABI 
     -nodefaultlibs                     # Do not link any default libraries like libgcc or libc.
-    -Os                                # Optimize the code.
+    -O2                                # Optimize the code.
     -ggdb                              # Generate debug information in default extended format.
     -fsanitize=undefined               # Adds sanitizer for undefined behaviour.
     -fsanitize-undefined-trap-on-error # Invoke a trap instruction instead of calling into the UBsan runtime.
