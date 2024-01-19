@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "badge_strings.h"
-
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -19,10 +17,11 @@ typedef int32_t diskoff_t;
 #define FMT_TYPE_DISKOFF "i32"
 #endif
 
-
 typedef enum {
     BOOTMEDIA_TYPE_XIP,
 } bootmedia_type_t;
+
+
 
 // Abstract bootable device.
 typedef struct bootmedia bootmedia_t;
@@ -49,6 +48,7 @@ struct bootmedia {
     // Per-type extra state.
     union {};
 };
+
 
 
 // First boot media.

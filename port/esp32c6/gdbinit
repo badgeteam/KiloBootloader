@@ -9,7 +9,7 @@ mem 0x50000000 0x50004000 rw
 define reset
     mon reset halt
     maintenance flush register-cache
-    thb main
+    thb basic_runtime_init
     c
 end
 

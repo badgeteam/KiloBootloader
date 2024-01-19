@@ -21,7 +21,7 @@ SECTIONS
 	__start_lpsram = 0x50000000;
 	__stop_lpsram  = 0x50004000;
 	
-	__section_alignment = 8;
+	__section_alignment = 16;
 	
 	/* RAM sections. */
 	. = __start_sram;

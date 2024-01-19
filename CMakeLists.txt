@@ -40,20 +40,19 @@ set(common_compiler_flags
     -march=${target_arch}              # Selects the target CPU.
     -mabi=${target_abi}                # Selects target ABI 
     -nodefaultlibs                     # Do not link any default libraries like libgcc or libc.
-    -O1                                # Optimize the code.
+    -O2                                # Optimize the code.
     -ggdb                              # Generate debug information in default extended format.
     -fsanitize=undefined               # Adds sanitizer for undefined behaviour.
     -fsanitize-undefined-trap-on-error # Invoke a trap instruction instead of calling into the UBsan runtime.
     -Werror=return-type                # Error when a function doesn't return a value, but declares to do so.
     -Wall -Wextra                      # Ramp up warning level.
     -std=gnu11                         # We use the C11 standard
-    -DBADGEROS_KERNEL                  # Tell the code we're building for the kernel
-    -DBADGEROS_MALLOC_DEBUG_LEVEL=4    # Turn on all malloc() debug stuff for now. 
+    -ffunction-sections                # Enable function sections for code size.
 )
 
 # we must pass the same options to GCC and LD when using LTO, as the linker will actually do the codegen
 add_compile_options(${common_compiler_flags})
-add_link_options(${common_compiler_flags} -nostartfiles)
+add_link_options(${common_compiler_flags} -nostartfiles -Wl,-gc-sections)
 
 # For IDE users.
 set(CMAKE_EXPORT_COMPILE_COMMANDS true)
@@ -70,7 +69,9 @@ add_executable(${target}
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/log.c
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/num_to_str.c
     ${CMAKE_CURRENT_LIST_DIR}/src/media/xip.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/protocol/esp.c
     ${CMAKE_CURRENT_LIST_DIR}/src/bootmedia.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/bootprotocol.c
     ${CMAKE_CURRENT_LIST_DIR}/src/main.c
 )
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include ${CMAKE_CURRENT_LIST_DIR}/include/badgelib)

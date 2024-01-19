@@ -2,24 +2,25 @@
 // SPDX-License-Identifier: MIT
 
 #include "badge_err.h"
-#include "bootmedia.h"
+#include "bootprotocol.h"
 #include "log.h"
 #include "memprotect.h"
 #include "port/interrupt.h"
-#include "rawprint.h"
 #include "time.h"
-#include "xip.h"
 
 
+
+static void bootstrap();
 
 // ISR context.
 static isr_ctx_t isr_ctx;
 
-char lol[128];
+unsigned long long __udivti3(unsigned long long x, unsigned long long y);
+long long          __divti3(long long x, long long y);
 
 // After control handover, the booting CPU core starts here and other cores wait.
-// This sets up the basics of everything needed by the other systems of the kernel.
-// When finished, the booting CPU will perform kernel initialization.
+// This sets up the basics of everything needed by the bootloader.
+// When finished, the booting CPU will continue by bootstrapping the kernel / firmware.
 void basic_runtime_init() {
     // ISR initialization.
     interrupt_init(&isr_ctx);
@@ -35,30 +36,19 @@ void basic_runtime_init() {
     // Full hardware initialization.
     // port_init();
 
-    logkf(LOG_DEBUG, "First media: %{size;x}", bootmedia_first);
-    logkf(LOG_DEBUG, "Last media:  %{size;x}", bootmedia_last);
+    // Continue to bootstrapping.
+    bootstrap();
+}
 
-    // Map the random text.
-    xip_map(
-        (xip_range_t){
-            .rom_addr = 0x18000,
-            .map_addr = 0x42010000,
-            .length   = 128,
-            .enable   = true,
-        },
-        false
-    );
+// After basic runtime initialization, the booting CPU core continues here.
+// This looks for bootable media and any bootable images on said media.
+// When finished, a kernel is bootstrapped or the bootloader gives up and halts.
+static void bootstrap() {
+    logk(LOG_INFO, "KiloBootloader v0.0");
 
-    // Dump XIP mappings.
-    xip_dump();
+    bootprotocol_first->boot(bootmedia_first, 0x10000);
 
-    // Try to show the text.
-    rawprint((char const *)0x42010000);
-
-    // Read the text.
-    bootmedia_t *media = bootmedia_first;
-    media->read(media, 0x20000, sizeof(lol) - 1, lol);
-    rawprint(lol);
-
+    logk(LOG_FATAL, "Failed to boot!");
     while (1) continue;
+    ;
 }

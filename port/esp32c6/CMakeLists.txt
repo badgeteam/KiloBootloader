@@ -4,7 +4,6 @@
 cmake_minimum_required(VERSION 3.10.0)
 
 target_sources(${target} PUBLIC
-	${CMAKE_CURRENT_LIST_DIR}/src/clkconfig.c
 	${CMAKE_CURRENT_LIST_DIR}/src/interrupt.c
 	${CMAKE_CURRENT_LIST_DIR}/src/intmtx.c
     ${CMAKE_CURRENT_LIST_DIR}/src/memprotect.c
@@ -17,5 +16,7 @@ target_sources(${target} PUBLIC
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 target_link_options(${target} PUBLIC -T${CMAKE_CURRENT_LIST_DIR}/linker.ld)
 
-# XIP boot media exists for this platform
+# Chip ID for ESP32-C6.
+target_compile_definitions(${target} PUBLIC -DHAS_BOOTPROTOCOL_ESP -DESP_CHIP_ID=0x000D)
+# XIP boot media exists for this platform.
 target_compile_definitions(${target} PUBLIC -DHAS_BOOTMEDIA_XIP)

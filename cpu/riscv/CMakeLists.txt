@@ -12,6 +12,5 @@ target_sources(${target} PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/src/isr.c
     ${CMAKE_CURRENT_LIST_DIR}/src/isr_ctx.c
     ${CMAKE_CURRENT_LIST_DIR}/src/panic.c
-    ${CMAKE_CURRENT_LIST_DIR}/src/riscv_pmp.c
 )
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
