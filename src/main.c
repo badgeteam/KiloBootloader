@@ -5,6 +5,7 @@
 #include "log.h"
 #include "memprotect.h"
 #include "port/interrupt.h"
+#include "rawprint.h"
 #include "time.h"
 #include "xip.h"
 
@@ -42,6 +43,40 @@ void basic_runtime_init() {
 
     // Dump XIP mappings.
     xip_dump();
+
+    // Map the random text.
+    xip_map(
+        (xip_range_t){
+            .rom_addr = 0x18000,
+            .map_addr = 0x42010000,
+            .length   = 128,
+            .enable   = true,
+        },
+        false
+    );
+
+    // Dump XIP mappings.
+    xip_dump();
+
+    // Try to show the text.
+    rawprint((char const *)0x42010000);
+
+    // Map the random text.
+    xip_map(
+        (xip_range_t){
+            .rom_addr = 0x20000,
+            .map_addr = 0x42010000,
+            .length   = 128,
+            .enable   = true,
+        },
+        true
+    );
+
+    // Dump XIP mappings.
+    xip_dump();
+
+    // Try to show the text.
+    rawprint((char const *)0x42010000);
 
     while (1) continue;
 }
