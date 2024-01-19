@@ -16,3 +16,6 @@ target_sources(${target} PUBLIC
 )
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 target_link_options(${target} PUBLIC -T${CMAKE_CURRENT_LIST_DIR}/linker.ld)
+
+# XIP boot media exists for this platform
+target_compile_definitions(${target} PUBLIC -DHAS_BOOTMEDIA_XIP)

@@ -42,5 +42,8 @@ bool        xip_set(size_t index, xip_range_t value);
 bool        xip_map(xip_range_t range, bool override);
 // Unmap an arbitrary page-aligned XIP range.
 bool        xip_unmap(size_t vaddr, size_t length);
+// Get an available virtual address.
+// Returns 0 if there are no more free addresses.
+size_t      xip_find_vaddr();
 // Debug: Dump XIP regions.
 void        xip_dump();

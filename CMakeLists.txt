@@ -69,6 +69,8 @@ add_executable(${target}
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/badge_strings.c
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/log.c
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/num_to_str.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/media/xip.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/bootmedia.c
     ${CMAKE_CURRENT_LIST_DIR}/src/main.c
 )
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include ${CMAKE_CURRENT_LIST_DIR}/include/badgelib)

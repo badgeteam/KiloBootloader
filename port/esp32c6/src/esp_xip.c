@@ -1,11 +1,10 @@
 
 // SPDX-License-Identifier: MIT
 
-#include "xip.h"
-
 #include "log.h"
 #include "port/hardware.h"
 #include "port/reg/esp_spimem.h"
+#include "xip.h"
 
 #define SOC_MMU_VALID     (1 << 9)
 #define SOC_MMU_SENSITIVE (1 << 10)
@@ -227,6 +226,18 @@ bool xip_unmap(size_t vaddr, size_t length) {
     }
 
     return true;
+}
+
+// Get an available virtual address.
+// Returns 0 if there are no more free addresses.
+size_t xip_find_vaddr() {
+    for (ptrdiff_t i = XIP_PAGE_VIRT_MAX - 1; i >= 0; i--) {
+        XIPMEM.mmu_item_index = i;
+        if (!(XIPMEM.mmu_item_content & SOC_MMU_VALID)) {
+            return xip_map_base() + (size_t)i * xip_get_page_size();
+        }
+    }
+    return 0;
 }
 
 // Debug: Dump XIP regions.
