@@ -21,6 +21,9 @@ SECTIONS
 	__start_lpsram = 0x50000000;
 	__stop_lpsram  = 0x50004000;
 	
+	/* ROM symbols. */
+	INCLUDE esp32c6.rom.ld
+	
 	__section_alignment = 16;
 	
 	
@@ -40,7 +43,7 @@ SECTIONS
 		SHORT(0x0000);		/* Min chip rev. */
 		SHORT(0x0000);		/* Max chip rev. */
 		LONG(0x00000000);	/* (reserved) */
-		BYTE(0x00);			/* SHA256 appended (not appended). */
+		BYTE(0x01);			/* SHA256 appended (appended). */
 	} :hdrseg
 	
 	/* ESP image segment 0. */
