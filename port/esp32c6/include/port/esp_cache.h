@@ -1,6 +1,10 @@
 
 // SPDX-License-Identifier: MIT
 
+#pragma once
+
+#include "attributes.h"
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -16,8 +20,12 @@ typedef enum {
 // Initialise the cache HAL.
 void esp_cache_init();
 // Disable caches.
-void esp_cache_disable(int level_mask, esp_cache_type_t types);
+void esp_cache_disable();
 // Enable caches.
-void esp_cache_enable(int level_mask, esp_cache_type_t types);
+void esp_cache_enable();
+// Try to flush a cache range, if supported.
+bool esp_cache_flush(size_t addr, size_t len);
+// Try to flush the entire cache, if supported.
+bool esp_cache_flush_all();
 // Query whether the cache is enabled.
-bool esp_cache_is_enabled(int level_mask, esp_cache_type_t types);
+bool esp_cache_is_enabled();

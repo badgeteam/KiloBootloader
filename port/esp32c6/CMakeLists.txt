@@ -10,11 +10,12 @@ target_sources(${target} PUBLIC
 	${CMAKE_CURRENT_LIST_DIR}/src/rawprint.c
 	${CMAKE_CURRENT_LIST_DIR}/src/time.c
 	
+	${CMAKE_CURRENT_LIST_DIR}/src/port.c
 	${CMAKE_CURRENT_LIST_DIR}/src/esp_cache.c
 	${CMAKE_CURRENT_LIST_DIR}/src/esp_xip.c
 )
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
-target_link_options(${target} PUBLIC -T${CMAKE_CURRENT_LIST_DIR}/linker.ld)
+target_link_options(${target} PUBLIC -T${CMAKE_CURRENT_LIST_DIR}/linker.ld -L${CMAKE_CURRENT_LIST_DIR})
 
 # Chip ID for ESP32-C6.
 target_compile_definitions(${target} PUBLIC -DHAS_BOOTPROTOCOL_ESP -DESP_CHIP_ID=0x000D)

@@ -15,7 +15,6 @@
 static diskoff_t bootmedia_xip_read(bootmedia_t *media, diskoff_t offset, diskoff_t length, void *_mem) {
     (void)media;
     size_t page_size = xip_get_page_size();
-    logkf(LOG_DEBUG, "read(%{" FMT_TYPE_DISKOFF ";x}, %{" FMT_TYPE_DISKOFF ";d}, %{size;x})", offset, length, _mem);
 
     // Memory currently being written to.
     uint8_t *mem  = _mem;
@@ -47,8 +46,7 @@ static diskoff_t bootmedia_xip_read(bootmedia_t *media, diskoff_t offset, diskof
         mem_copy(mem + read, (void const *)(range.map_addr + start), end - start);
 
         // Unmap the temporary page.
-        // TODO: Needs cache drivers, will do later.
-        // xip_unmap(range.map_addr, 1);
+        xip_unmap(range.map_addr, 1);
 
         // Move on to the next page.
         offset += end - start;
@@ -62,7 +60,6 @@ static diskoff_t bootmedia_xip_read(bootmedia_t *media, diskoff_t offset, diskof
 // XIP memory map function.
 static bool bootmedia_xip_mmap(bootmedia_t *media, diskoff_t offset, diskoff_t length, size_t vaddr) {
     (void)media;
-    logkf(LOG_DEBUG, "map(%{" FMT_TYPE_DISKOFF ";x}, %{" FMT_TYPE_DISKOFF ";d}, %{size;x})", offset, length, vaddr);
     return xip_map(
         (xip_range_t){
             .rom_addr = offset,

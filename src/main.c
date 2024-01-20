@@ -5,6 +5,7 @@
 #include "bootprotocol.h"
 #include "log.h"
 #include "memprotect.h"
+#include "port.h"
 #include "port/interrupt.h"
 #include "time.h"
 
@@ -15,9 +16,6 @@ static void bootstrap();
 // ISR context.
 static isr_ctx_t isr_ctx;
 
-unsigned long long __udivti3(unsigned long long x, unsigned long long y);
-long long          __divti3(long long x, long long y);
-
 // After control handover, the booting CPU core starts here and other cores wait.
 // This sets up the basics of everything needed by the bootloader.
 // When finished, the booting CPU will continue by bootstrapping the kernel / firmware.
@@ -25,7 +23,7 @@ void basic_runtime_init() {
     // ISR initialization.
     interrupt_init(&isr_ctx);
     // Early platform initialization.
-    // port_early_init();
+    port_early_init();
 
     // Timekeeping initialization.
     time_init();
@@ -34,7 +32,7 @@ void basic_runtime_init() {
     memprotect_init();
 
     // Full hardware initialization.
-    // port_init();
+    port_init();
 
     // Continue to bootstrapping.
     bootstrap();
@@ -50,5 +48,4 @@ static void bootstrap() {
 
     logk(LOG_FATAL, "Failed to boot!");
     while (1) continue;
-    ;
 }

@@ -3,6 +3,7 @@
 
 #ifdef HAS_BOOTPROTOCOL_ESP
 
+#include "attributes.h"
 #include "bootprotocol.h"
 #include "log.h"
 #include "memmap.h"
@@ -16,7 +17,7 @@
 #define ESP_MAX_SEG 16
 
 // ESP boot protocol header.
-typedef struct {
+typedef struct PACKED {
     // Magic byte.
     uint8_t  magic;
     // Segment count.
@@ -81,7 +82,6 @@ bool bootprotocol_esp_boot(bootmedia_t *media, diskoff_t offset) {
         logk(LOG_ERROR, "Too few bytes read from media (header)");
         return false;
     }
-    logk_hexdump(LOG_DEBUG, "ESP image header:", &header, sizeof(header));
 
     // Check the header more throuroughly.
     if (header.magic != 0xE9 || header.chip != ESP_CHIP_ID) {
@@ -121,7 +121,6 @@ bool bootprotocol_esp_boot(bootmedia_t *media, diskoff_t offset) {
     for (size_t i = 0; i < header.segments; i++) {
         if (IS_XIP_RANGE(segs[i].vaddr, segs[i].length)) {
             // Try to memory map this.
-            logkf(LOG_DEBUG, "0x%{size;x}", media->mmap);
             media->mmap(media, segs_paddr[i], segs[i].length, segs[i].vaddr);
         } else if (IS_SRAM_RANGE(segs[i].vaddr, segs[i].length)) {
             // Try to read this.

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "log.h"
+#include "port/esp_cache.h"
 #include "port/hardware.h"
 #include "port/reg/esp_spimem.h"
 #include "xip.h"
@@ -119,7 +120,7 @@ bool xip_set(size_t index, xip_range_t range) {
     XIPMEM.mmu_item_index   = index;
     XIPMEM.mmu_item_content = (range.rom_addr / xip_get_page_size()) | SOC_MMU_VALID;
 
-    return true;
+    return esp_cache_flush(range.map_addr, range.length);
 }
 
 // Map an arbitrary page-aligned XIP range.
@@ -197,7 +198,8 @@ bool xip_map(xip_range_t range, bool override) {
         XIPMEM.mmu_item_content = x | SOC_MMU_VALID;
     }
 
-    return true;
+    // Invalidate cache range.
+    return esp_cache_flush(range.map_addr, range.length);
 }
 
 // Unmap an arbitrary page-aligned XIP range.

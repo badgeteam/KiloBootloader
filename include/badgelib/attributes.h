@@ -13,7 +13,7 @@
 #define PURE __attribute__((pure))
 
 // Declares that a function has no observable side effects, does not mutate its parameters and does not read memory.
-#define CONST __attribute__((pure))
+#define CONST __attribute__((const))
 
 // Declares that a function is not called very often and can be size-optimized even in fast builds.
 #define COLD __attribute__((cold))

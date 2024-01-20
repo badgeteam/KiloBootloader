@@ -133,6 +133,8 @@
 #define DEBUG_BASE        (PERI_BASE + 0xC2000)
 // Base address of Interrupt Priority Register.
 #define INTPRI_BASE       (PERI_BASE + 0xC5000)
+// Base address of EXTMEM configuration.
+#define EXTMEM_BASE       (PERI_BASE + 0xC8000)
 
 // Base address of PLIC.
 #define PLIC_MX_BASE (CPUSYS_BASE + 0x1000)
@@ -144,3 +146,11 @@
         *(volatile uint32_t *)(addr) = (val);                                                                          \
     } while (0)
 #define READ_REG(addr) (*(volatile uint32_t *)(addr))
+#define CLR_BIT_REG(addr, clr)                                                                                         \
+    do {                                                                                                               \
+        *(volatile uint32_t *)(addr) &= ~(clr);                                                                        \
+    } while (0)
+#define SET_BIT_REG(addr, set)                                                                                         \
+    do {                                                                                                               \
+        *(volatile uint32_t *)(addr) |= (set);                                                                         \
+    } while (0)
