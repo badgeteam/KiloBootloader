@@ -72,6 +72,8 @@ bool esp_cache_flush(size_t addr, size_t len) {
 #if SOC_CACHE_INALIDATE_SUPPORTED
     return !Cache_Invalidate_Addr(addr, len);
 #else
+    (void)addr;
+    (void)len;
     return esp_cache_flush_all();
 #endif
 }

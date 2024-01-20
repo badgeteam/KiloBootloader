@@ -17,14 +17,12 @@ typedef int32_t diskoff_t;
 #define FMT_TYPE_DISKOFF "i32"
 #endif
 
-typedef enum {
-    BOOTMEDIA_TYPE_XIP,
-} bootmedia_type_t;
-
-
-
 // Abstract bootable device.
 typedef struct bootmedia bootmedia_t;
+
+#include "partsys.h"
+
+
 
 // Bootable media random read function.
 typedef diskoff_t (*bootmedia_read_t)(bootmedia_t *media, diskoff_t offset, diskoff_t length, void *mem);
@@ -39,14 +37,16 @@ struct bootmedia {
     bootmedia_t     *next;
     // Media ID.
     int              id;
-    // Media type.
-    bootmedia_type_t type;
     // Read function.
     bootmedia_read_t read;
     // Optional memory map function.
     bootmedia_mmap_t mmap;
-    // Per-type extra state.
-    union {};
+    // Detected partitioning system, if any.
+    partsys_t       *partsys;
+    // Number of partitions.
+    diskoff_t        part_num;
+    // Selected partition, or -1 if none selected.
+    diskoff_t        part_sel;
 };
 
 

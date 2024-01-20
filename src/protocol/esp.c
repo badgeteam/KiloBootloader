@@ -62,7 +62,7 @@ esp_boot_seg_t segs[ESP_MAX_SEG];
 uint32_t       segs_paddr[ESP_MAX_SEG];
 
 // ESP identify function.
-bool bootprotocol_esp_ident(bootmedia_t *media, diskoff_t offset) {
+static bool bootprotocol_esp_ident(bootmedia_t *media, diskoff_t offset) {
     // Try to read the header.
     esp_boot_hdr_t header;
     if (media->read(media, offset, sizeof(header), &header) != sizeof(header)) {
@@ -75,7 +75,7 @@ bool bootprotocol_esp_ident(bootmedia_t *media, diskoff_t offset) {
 }
 
 // ESP boot function.
-bool bootprotocol_esp_boot(bootmedia_t *media, diskoff_t offset) {
+static bool bootprotocol_esp_boot(bootmedia_t *media, diskoff_t offset) {
     // Try to read the header.
     esp_boot_hdr_t header;
     if (media->read(media, offset, sizeof(header), &header) != sizeof(header)) {
@@ -180,7 +180,7 @@ static bootprotocol_t esp_protocol = {
     .boot  = bootprotocol_esp_boot,
 };
 
-// Register XIP boot media.
+// Register ESP boot protocol.
 static void register_esp_protocol() __attribute__((constructor));
 static void register_esp_protocol() {
     bootprotocol_register(&esp_protocol);
