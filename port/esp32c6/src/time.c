@@ -129,6 +129,10 @@ void time_init() {
     WRITE_REG(LP_WDT_WRPROTECT_REG, LD_WDT_WRPROTECT_MAGIC);
     WRITE_REG(LP_WDT_CONFIG0_REG, 0);
 
+    // Disable TG0 WDT.
+    WRITE_REG(TIMG0_BASE + WDTWPROTECT_REG, 0x50d83aa1);
+    WRITE_REG(TIMG0_BASE + WDTCONFIG0_REG, 0);
+
     // Set TIMG0 T0 frequency to 1MHz.
     timer_stop(0);
     timer_set_freq(0, 1000000);

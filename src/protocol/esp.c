@@ -5,6 +5,7 @@
 
 #include "bootprotocol.h"
 #include "log.h"
+#include "memmap.h"
 
 
 
@@ -41,7 +42,7 @@ typedef struct {
     // Reserved.
     uint32_t _reserved;
     // SHA256 appended.
-    bool     has_sha256;
+    uint8_t  has_sha256;
 } esp_boot_hdr_t;
 
 // ESP boot protocol segment.
@@ -80,6 +81,7 @@ bool bootprotocol_esp_boot(bootmedia_t *media, diskoff_t offset) {
         logk(LOG_ERROR, "Too few bytes read from media (header)");
         return false;
     }
+    logk_hexdump(LOG_DEBUG, "ESP image header:", &header, sizeof(header));
 
     // Check the header more throuroughly.
     if (header.magic != 0xE9 || header.chip != ESP_CHIP_ID) {
@@ -101,7 +103,7 @@ bool bootprotocol_esp_boot(bootmedia_t *media, diskoff_t offset) {
             logk(LOG_ERROR, "Too few bytes read from media (segment)");
             return false;
         }
-        segs_paddr[i]  = seg_off;
+        segs_paddr[i]  = seg_off + sizeof(esp_boot_seg_t);
         seg_off       += sizeof(esp_boot_seg_t) + segs[i].length;
         logkf(
             LOG_INFO,
@@ -113,6 +115,33 @@ bool bootprotocol_esp_boot(bootmedia_t *media, diskoff_t offset) {
             segs[i].vaddr
         );
     }
+
+    // Map segments.
+    logkf(LOG_INFO, "Loading kernel");
+    for (size_t i = 0; i < header.segments; i++) {
+        if (IS_XIP_RANGE(segs[i].vaddr, segs[i].length)) {
+            // Try to memory map this.
+            logkf(LOG_DEBUG, "0x%{size;x}", media->mmap);
+            media->mmap(media, segs_paddr[i], segs[i].length, segs[i].vaddr);
+        } else if (IS_SRAM_RANGE(segs[i].vaddr, segs[i].length)) {
+            // Try to read this.
+            media->read(media, segs_paddr[i], segs[i].length, (void *)segs[i].vaddr);
+        } else {
+            // Not loadable to this address.
+            logkf(
+                LOG_FATAL,
+                "Unable to satisfy virtual address range %{size;x}-%{size;x}",
+                segs[i].vaddr,
+                segs[i].vaddr + segs[i].length
+            );
+        }
+    }
+
+    // Hand over control.
+    logkf(LOG_INFO, "Jumping to 0x%{size;x}", header.entry);
+    asm volatile("csrc mstatus, 8");
+    asm volatile("csrw mie, 0");
+    ((void (*)())header.entry)();
 
     return true;
 }

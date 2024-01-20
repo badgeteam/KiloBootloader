@@ -23,27 +23,6 @@ SECTIONS
 	
 	__section_alignment = 16;
 	
-	/* RAM sections. */
-	. = __start_sram;
-	__start_data = .;
-	.data : AT(SIZEOF(.esphdr) + SIZEOF(.espseg.0)) {
-		__global_pointer$ = .;
-		*(.data) *(.data*)
-		*(.sdata) *(.sdata*)
-		. = ALIGN(__section_alignment);
-	} :dataseg
-	__stop_data = .;
-	
-	__start_bss = .;
-	.bss : {
-		*(.bss) *(.bss*)
-		*(.sbss) *(.sbss*)
-		. = ALIGN(__section_alignment);
-	} :NONE
-	__stop_bss = .;
-	
-	/* FLASH sections. */
-	. = __start_xip;
 	
 	/* ESP image header. */
 	.esphdr : AT(0) {
@@ -70,8 +49,16 @@ SECTIONS
 		LONG(__stop_data - __start_data);
 	} :hdrseg
 	
-	/* Defined above: Initialised data segment. */
-	. = . + SIZEOF(.data);
+	/* RAM sections. */
+	. = __stop_sram - 0x20000;
+	__start_data = .;
+	.data : AT(SIZEOF(.esphdr) + SIZEOF(.espseg.0)) {
+		__global_pointer$ = .;
+		*(.data) *(.data*)
+		*(.sdata) *(.sdata*)
+		. = ALIGN(__section_alignment);
+	} :dataseg
+	__stop_data = .;
 	
 	/* ESP image segment 1. */
 	.espseg.1 : AT(LOADADDR(.data) + SIZEOF(.data)) {
@@ -110,6 +97,14 @@ SECTIONS
 		. = ALIGN(__section_alignment);
 	} :rodataseg
 	__stop_rodata = .;
+	
+	__start_bss = .;
+	.bss : {
+		*(.bss) *(.bss*)
+		*(.sbss) *(.sbss*)
+		. = ALIGN(__section_alignment);
+	} :NONE
+	__stop_bss = .;
 	
 	/* Unallocated physical memory. */
 	__start_free_xip    = (__stop_rodata + 0xffff) & 0xffff0000;
