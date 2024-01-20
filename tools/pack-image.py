@@ -3,6 +3,7 @@
 
 import os, argparse, shutil
 from pathlib import Path
+from hashlib import sha256
 
 def patchElf(fd):
     # Determine the length of the file.
@@ -39,6 +40,18 @@ def patchElf(fd):
     # Append checksum.
     fd.seek(0, 2)
     fd.write(bytes([xsum_state]))
+    
+    # Check whether file wants sha256.
+    fd.seek(23, 0)
+    if not fd.read(1)[0]: return
+    
+    # Take a sha256 of the file.
+    fd.seek(0, 0)
+    raw = fd.read()
+    xsum = sha256(raw).digest()
+    fd.write(xsum)
+
+
 
 def main():
 
