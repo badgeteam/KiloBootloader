@@ -128,12 +128,39 @@ bool bootprotocol_esp_boot(bootmedia_t *media, diskoff_t offset) {
         } else {
             // Not loadable to this address.
             logkf(
-                LOG_FATAL,
+                LOG_ERROR,
                 "Unable to satisfy virtual address range %{size;x}-%{size;x}",
                 segs[i].vaddr,
                 segs[i].vaddr + segs[i].length
             );
         }
+    }
+
+    // Read checksum.
+    diskoff_t xsum_off   = seg_off - offset;
+    diskoff_t padd_size  = ((xsum_off + 15) & ~15) - xsum_off;
+    padd_size            = (padd_size - 1) & 15;
+    xsum_off            += padd_size + offset;
+    uint8_t read_xsum    = 0;
+    if (media->read(media, xsum_off, 1, &read_xsum) != 1) {
+        logk(LOG_ERROR, "Too few bytes read from media (checksum)");
+        return false;
+    }
+
+
+    // Take checksum of loaded segments.
+    uint8_t xsum_state = 0xEF;
+    for (size_t i = 0; i < header.segments; i++) {
+        uint8_t const *ptr = (uint8_t const *)segs[i].vaddr;
+        for (size_t x = 0; x < segs[i].length; x++) {
+            xsum_state ^= ptr[x];
+        }
+    }
+
+    // Compare checksums.
+    if (read_xsum != xsum_state) {
+        logkf(LOG_ERROR, "Checksum mismatch: expected %{u8;x}, got %{u8;x}", read_xsum, xsum_state);
+        return false;
     }
 
     // Hand over control.
