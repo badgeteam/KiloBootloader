@@ -84,10 +84,6 @@ static bool bootprotocol_esp_boot(bootmedia_t *media, diskoff_t offset) {
     }
 
     // Check the header more throuroughly.
-    if (header.magic != 0xE9 || header.chip != ESP_CHIP_ID) {
-        logk(LOG_ERROR, "Invalid ESP boot protocol header");
-        return false;
-    }
     if (header.segments == 0 || header.segments > ESP_MAX_SEG) {
         logkf(LOG_ERROR, "Invalid ESP segment count (%{u8;d})", header.segments);
         return false;

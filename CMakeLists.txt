@@ -48,6 +48,7 @@ set(common_compiler_flags
     -Wall -Wextra                      # Ramp up warning level.
     -std=gnu11                         # We use the C11 standard
     -ffunction-sections                # Enable function sections for code size.
+    -DKILOBOOTLOADER
 )
 
 # we must pass the same options to GCC and LD when using LTO, as the linker will actually do the codegen
@@ -66,14 +67,17 @@ add_executable(${target}
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/badge_err.c
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/badge_format_str.c
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/badge_strings.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/checksum.c
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/int_routines.c
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/log.c
     ${CMAKE_CURRENT_LIST_DIR}/src/badgelib/num_to_str.c
-    ${CMAKE_CURRENT_LIST_DIR}/src/partsys/appfs.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/filesys/appfs.c
     ${CMAKE_CURRENT_LIST_DIR}/src/media/xip.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/partsys/esp.c
     ${CMAKE_CURRENT_LIST_DIR}/src/protocol/esp.c
     ${CMAKE_CURRENT_LIST_DIR}/src/bootmedia.c
     ${CMAKE_CURRENT_LIST_DIR}/src/bootprotocol.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/filesys.c
     ${CMAKE_CURRENT_LIST_DIR}/src/main.c
     ${CMAKE_CURRENT_LIST_DIR}/src/partsys.c
 )

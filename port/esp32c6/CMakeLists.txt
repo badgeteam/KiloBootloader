@@ -17,9 +17,14 @@ target_sources(${target} PUBLIC
 target_include_directories(${target} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 target_link_options(${target} PUBLIC -T${CMAKE_CURRENT_LIST_DIR}/linker.ld -L${CMAKE_CURRENT_LIST_DIR})
 
-# AppFS supports this chip.
-target_compile_definitions(${target} PUBLIC -DHAS_PARTSYS_APPFS)
-# ESP image format supports this chip.
-target_compile_definitions(${target} PUBLIC -DHAS_BOOTPROTOCOL_ESP -DESP_CHIP_ID=0x000D)
-# XIP boot media exists for this platform.
+# Enable XIP boot media.
 target_compile_definitions(${target} PUBLIC -DHAS_BOOTMEDIA_XIP)
+
+# Enable ESP partition table.
+target_compile_definitions(${target} PUBLIC -DHAS_PARTSYS_ESP)
+
+# Enable AppFS file system.
+target_compile_definitions(${target} PUBLIC -DHAS_FILESYS_APPFS)
+
+# Enable ESP image format.
+target_compile_definitions(${target} PUBLIC -DHAS_BOOTPROTOCOL_ESP -DESP_CHIP_ID=0x000D)

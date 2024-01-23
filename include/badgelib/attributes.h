@@ -24,6 +24,9 @@
 // Declares that a function call must be inlined whenever possible.
 #define FORCEINLINE __attribute__((always_inline))
 
+// Declares that a function call must never be inlined.
+#define NOINLINE __attribute__((noinline))
+
 // Declares that a symbol will be placed in a section called `name`
 #define SECTION(name) __attribute__((section(name)))
 

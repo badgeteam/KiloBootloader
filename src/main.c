@@ -3,6 +3,7 @@
 
 #include "badge_err.h"
 #include "bootprotocol.h"
+#include "checksum.h"
 #include "log.h"
 #include "memprotect.h"
 #include "port.h"
@@ -42,8 +43,9 @@ void basic_runtime_init() {
 // This looks for bootable media and any bootable images on said media.
 // When finished, a kernel is bootstrapped or the bootloader gives up and halts.
 static void bootstrap() {
-    logk(LOG_INFO, "KiloBootloader v0.0");
+    logk(LOG_INFO, "KiloBootloader v0.1");
 
+    partsys_first->ident(bootmedia_first);
     bootprotocol_first->boot(bootmedia_first, 0x10000);
 
     logk(LOG_FATAL, "Failed to boot!");

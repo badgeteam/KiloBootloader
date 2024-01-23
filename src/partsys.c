@@ -10,7 +10,7 @@ partsys_t *partsys_first = NULL;
 // Last partition system.
 partsys_t *partsys_last  = NULL;
 
-// Register a new boot device.
+// Register a new partitioning system.
 // This should only be called from constructor functions.
 void partsys_register(partsys_t *partsys) {
     // Protocol is added to the end of the list.

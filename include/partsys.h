@@ -3,6 +3,11 @@
 
 #pragma once
 
+#ifndef PART_NAME_MAX
+// Maximum partition name length.
+#define PART_NAME_MAX 15
+#endif
+
 // Abstract partition system.
 typedef struct partsys partsys_t;
 
@@ -15,18 +20,24 @@ typedef struct partsys partsys_t;
 
 
 // Partition information.
-typedef struct {
+typedef struct partition partition_t;
+// Partition information.
+struct partition {
+    // Partition flags.
+    struct {
+        // Partition is bootable.
+        uint32_t bootable : 1;
+        uint32_t          : 31;
+    } flags;
     // Offset on disk.
     diskoff_t offset;
     // Length on disk.
     diskoff_t length;
-    // Is a bootable partition.
-    bool      bootable;
-    // Is a valid parition.
-    bool      valid;
-} partition_t;
+    // Partition name.
+    char      name[PART_NAME_MAX + 1];
+};
 
-typedef bool (*partsys_ident_t)(bootmedia_t *media);
+typedef size_t (*partsys_ident_t)(bootmedia_t *media);
 typedef partition_t (*partsys_read_t)(bootmedia_t *media, diskoff_t part_index);
 
 // Abstract partition system.
