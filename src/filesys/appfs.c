@@ -4,6 +4,7 @@
 #ifdef HAS_FILESYS_APPFS
 
 #include "attributes.h"
+#include "badge_strings.h"
 #include "filesys.h"
 #include "log.h"
 
@@ -66,7 +67,7 @@ static bool filesys_appfs_ident(partition_t *part) {
         logk(LOG_WARN, "Too few bytes read from media (header 0)");
         return false;
     }
-    if (!memcmp(id, appfs_magic, sizeof(appfs_magic))) {
+    if (mem_equals(id, appfs_magic, sizeof(appfs_magic))) {
         return true;
     }
 
@@ -75,7 +76,7 @@ static bool filesys_appfs_ident(partition_t *part) {
         logk(LOG_WARN, "Too few bytes read from media (header 1)");
         return false;
     }
-    if (!memcmp(id, appfs_magic, sizeof(appfs_magic))) {
+    if (mem_equals(id, appfs_magic, sizeof(appfs_magic))) {
         return true;
     }
 
@@ -100,8 +101,8 @@ static bool filesys_appfs_read(partition_t *part, filesys_t *filesys, file_t *fi
         logk(LOG_ERROR, "Too few bytes read from media (header 1)");
         return false;
     }
-    hdr0_valid = !memcmp(&hdr0.magic, appfs_magic, sizeof(appfs_magic));
-    hdr1_valid = !memcmp(&hdr1.magic, appfs_magic, sizeof(appfs_magic));
+    hdr0_valid = mem_equals(&hdr0.magic, appfs_magic, sizeof(appfs_magic));
+    hdr1_valid = mem_equals(&hdr1.magic, appfs_magic, sizeof(appfs_magic));
 
     return false;
 }
@@ -117,7 +118,7 @@ static filesys_type_t appfs_filesys = {
 // Register AppFS file system.
 static void register_appfs_filesys() __attribute__((constructor));
 static void register_appfs_filesys() {
-    filesys_register(&appfs_filesys);
+    filesys_type_register(&appfs_filesys);
 }
 
 #endif

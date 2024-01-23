@@ -86,7 +86,7 @@ typedef struct {
 
 
 // Try to identify and read a partitioning system.
-static size_t partsys_esp_ident(bootmedia_t *media) {
+static diskoff_t partsys_esp_ident(bootmedia_t *media) {
     // Partition table identifiable by magic value.
     esp_part_entry_t entry;
     if (media->read(media, ESP_PARTTAB_OFFSET, sizeof(esp_part_entry_t), &entry) != sizeof(esp_part_entry_t)) {
@@ -97,8 +97,8 @@ static size_t partsys_esp_ident(bootmedia_t *media) {
     }
 
     // Count partitions.
-    size_t i;
-    for (i = 0; i < ESP_PARTTAB_SIZE / sizeof(esp_part_entry_t); i++) {
+    diskoff_t i;
+    for (i = 0; i < (diskoff_t)(ESP_PARTTAB_SIZE / sizeof(esp_part_entry_t)); i++) {
         // Read partition entry.
         if (media->read(media, ESP_PARTTAB_OFFSET + i * sizeof(esp_part_entry_t), sizeof(esp_part_entry_t), &entry) !=
             sizeof(esp_part_entry_t)) {
@@ -158,7 +158,12 @@ static size_t partsys_esp_ident(bootmedia_t *media) {
 static partition_t partsys_esp_read(bootmedia_t *media, diskoff_t part_index) {
     // Read partition entry.
     esp_part_entry_t entry;
-    if (media->read(media, ESP_PARTTAB_OFFSET, sizeof(esp_part_entry_t), &entry) != sizeof(esp_part_entry_t)) {
+    if (media->read(
+            media,
+            ESP_PARTTAB_OFFSET + sizeof(esp_part_entry_t) * part_index,
+            sizeof(esp_part_entry_t),
+            &entry
+        ) != sizeof(esp_part_entry_t)) {
         logk(LOG_ERROR, "Too few bytes read from media (partition entry; this is a bug)");
         return (partition_t){.flags = {.bootable = false}};
     } else if (entry.magic != ESP_PART_MAGIC) {
@@ -167,14 +172,17 @@ static partition_t partsys_esp_read(bootmedia_t *media, diskoff_t part_index) {
 
     // Convert partition format.
     partition_t part;
+    part.media      = media;
     part.offset     = entry.offset;
     part.length     = entry.size;
     size_t name_len = cstr_length_upto(
         entry.label,
         sizeof(part.name) - 1 < sizeof(entry.label) ? sizeof(part.name) - 1 : sizeof(entry.label)
+
     );
     mem_copy(part.name, entry.label, name_len);
     part.name[name_len] = 0;
+    part.flags.bootable = entry.type == PART_TYPE_APP;
 
     return part;
 }

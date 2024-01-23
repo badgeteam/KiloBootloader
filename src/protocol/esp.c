@@ -62,10 +62,10 @@ esp_boot_seg_t segs[ESP_MAX_SEG];
 uint32_t       segs_paddr[ESP_MAX_SEG];
 
 // ESP identify function.
-static bool bootprotocol_esp_ident(bootmedia_t *media, diskoff_t offset) {
+static bool bootprotocol_esp_ident(file_t *file) {
     // Try to read the header.
     esp_boot_hdr_t header;
-    if (media->read(media, offset, sizeof(header), &header) != sizeof(header)) {
+    if (file->read(file, 0, sizeof(header), &header) != sizeof(header)) {
         logk(LOG_WARN, "Too few bytes read from media (header)");
         return false;
     }
@@ -75,10 +75,10 @@ static bool bootprotocol_esp_ident(bootmedia_t *media, diskoff_t offset) {
 }
 
 // ESP boot function.
-static bool bootprotocol_esp_boot(bootmedia_t *media, diskoff_t offset) {
+static bool bootprotocol_esp_boot(file_t *file) {
     // Try to read the header.
     esp_boot_hdr_t header;
-    if (media->read(media, offset, sizeof(header), &header) != sizeof(header)) {
+    if (file->read(file, 0, sizeof(header), &header) != sizeof(header)) {
         logk(LOG_ERROR, "Too few bytes read from media (header)");
         return false;
     }
@@ -93,9 +93,9 @@ static bool bootprotocol_esp_boot(bootmedia_t *media, diskoff_t offset) {
     }
 
     // Read segment headers.
-    diskoff_t seg_off = offset + 24;
+    diskoff_t seg_off = 24;
     for (size_t i = 0; i < header.segments; i++) {
-        if (media->read(media, seg_off, sizeof(esp_boot_seg_t), &segs[i]) != sizeof(esp_boot_seg_t)) {
+        if (file->read(file, seg_off, sizeof(esp_boot_seg_t), &segs[i]) != sizeof(esp_boot_seg_t)) {
             logk(LOG_ERROR, "Too few bytes read from media (segment)");
             return false;
         }
@@ -117,10 +117,10 @@ static bool bootprotocol_esp_boot(bootmedia_t *media, diskoff_t offset) {
     for (size_t i = 0; i < header.segments; i++) {
         if (IS_XIP_RANGE(segs[i].vaddr, segs[i].length)) {
             // Try to memory map this.
-            media->mmap(media, segs_paddr[i], segs[i].length, segs[i].vaddr);
+            file->mmap(file, segs_paddr[i], segs[i].length, segs[i].vaddr);
         } else if (IS_SRAM_RANGE(segs[i].vaddr, segs[i].length)) {
             // Try to read this.
-            media->read(media, segs_paddr[i], segs[i].length, (void *)segs[i].vaddr);
+            file->read(file, segs_paddr[i], segs[i].length, (void *)segs[i].vaddr);
         } else {
             // Not loadable to this address.
             logkf(
@@ -133,12 +133,12 @@ static bool bootprotocol_esp_boot(bootmedia_t *media, diskoff_t offset) {
     }
 
     // Read checksum.
-    diskoff_t xsum_off   = seg_off - offset;
+    diskoff_t xsum_off   = seg_off;
     diskoff_t padd_size  = ((xsum_off + 15) & ~15) - xsum_off;
     padd_size            = (padd_size - 1) & 15;
-    xsum_off            += padd_size + offset;
+    xsum_off            += padd_size;
     uint8_t read_xsum    = 0;
-    if (media->read(media, xsum_off, 1, &read_xsum) != 1) {
+    if (file->read(file, xsum_off, 1, &read_xsum) != 1) {
         logk(LOG_ERROR, "Too few bytes read from media (checksum)");
         return false;
     }

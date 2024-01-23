@@ -9,10 +9,14 @@
 bootmedia_t *bootmedia_first = NULL;
 // Last boot media.
 bootmedia_t *bootmedia_last  = NULL;
+// Number of boot media.
+size_t       bootmedia_num   = 0;
 
 // Register a new boot device.
 // This should only be called from constructor functions.
 void bootmedia_register(bootmedia_t *media) {
+    bootmedia_num++;
+
     // Media is added to the end of the list.
     media->next = NULL;
 

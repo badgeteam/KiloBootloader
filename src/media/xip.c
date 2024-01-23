@@ -80,9 +80,14 @@ static bootmedia_t xip_media = {
 };
 
 // Register XIP boot media.
-static void register_xip_media() __attribute__((constructor));
-static void register_xip_media() {
+void register_xip_media() {
     bootmedia_register(&xip_media);
+#ifdef XIP_MEDIA_PAGE_SIZE
+    xip_set_page_size(XIP_MEDIA_PAGE_SIZE);
+#else
+    xip_set_page_size(XIP_REGION_MAX_SIZE);
+#endif
+    xip_media.size = xip_rom_size();
 }
 
 #endif

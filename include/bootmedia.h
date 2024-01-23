@@ -35,12 +35,12 @@ struct bootmedia {
     bootmedia_t     *prev;
     // Next boot media.
     bootmedia_t     *next;
-    // Media ID.
-    int              id;
     // Read function.
     bootmedia_read_t read;
     // Optional memory map function.
     bootmedia_mmap_t mmap;
+    // Size in bytes.
+    diskoff_t        size;
     // Detected partitioning system, if any.
     partsys_t       *partsys;
     // Number of partitions.
@@ -55,6 +55,8 @@ struct bootmedia {
 extern bootmedia_t *bootmedia_first;
 // Last boot media.
 extern bootmedia_t *bootmedia_last;
+// Number of boot media.
+extern size_t       bootmedia_num;
 
 // Register a new boot device.
 // This should only be called from constructor functions.

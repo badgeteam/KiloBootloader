@@ -69,12 +69,17 @@ struct file {
 
 
 // First filesystem type.
-extern filesys_type_t *filesys_first;
+extern filesys_type_t *filesys_type_first;
 // Last filesystem type.
-extern filesys_type_t *filesys_last;
+extern filesys_type_t *filesys_type_last;
+// Number of filesystem types.
+extern size_t          filesys_type_num;
+
+#ifdef ALLOW_UNFORMATTED_PARTITION
+// Dummy filesystem type for unformatted partitions.
+extern filesys_type_t filesys_type_raw;
+#endif
 
 // Register a new filesystem type.
 // This should only be called from constructor functions.
-void filesys_register(filesys_type_t *protocol);
-// Make a raw file for a partition.
-void filesys_make_raw(partition_t *part, filesys_t *filesys, file_t *file);
+void filesys_type_register(filesys_type_t *type);

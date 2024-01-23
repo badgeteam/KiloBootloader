@@ -42,8 +42,9 @@ flash: build
 	esptool.py -b 921600 --port "$(PORT)" \
 		write_flash --flash_mode dio --flash_freq 80m --flash_size 2MB \
 		0x10000 port/esp32c6/bin/badger-os.bin \
+		0x80000 port/esp32c6/bin/appfs.bin \
 		0x0 "$(OUTPUT)/kbbl.bin" \
-		0x8000 port/esp32c6/partition-table.bin
+		0x8000 port/esp32c6/partition-table-appfs.bin
 
 monitor:
 	echo -e "\033[1mType ^A^X to exit.\033[0m"

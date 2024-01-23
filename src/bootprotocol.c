@@ -9,10 +9,14 @@
 bootprotocol_t *bootprotocol_first = NULL;
 // Last boot protocol.
 bootprotocol_t *bootprotocol_last  = NULL;
+// Number of boot protocols.
+size_t          bootprotocol_num;
 
 // Register a new boot device.
 // This should only be called from constructor functions.
 void bootprotocol_register(bootprotocol_t *protocol) {
+    bootprotocol_num++;
+
     // Protocol is added to the end of the list.
     protocol->next = NULL;
 

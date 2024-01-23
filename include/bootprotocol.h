@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "bootmedia.h"
+#include "filesys.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -14,7 +14,7 @@
 // Abstract boot protocol.
 typedef struct bootprotocol bootprotocol_t;
 
-typedef bool (*bootprotocol_func_t)(bootmedia_t *media, diskoff_t offset);
+typedef bool (*bootprotocol_func_t)(file_t *file);
 
 // Abstract boot protocol.
 struct bootprotocol {
@@ -34,6 +34,8 @@ struct bootprotocol {
 extern bootprotocol_t *bootprotocol_first;
 // Last boot protocol.
 extern bootprotocol_t *bootprotocol_last;
+// Number of boot protocols.
+extern size_t          bootprotocol_num;
 
 // Register a new boot protocol.
 // This should only be called from constructor functions.

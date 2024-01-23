@@ -39,7 +39,7 @@ struct partition {
     char      name[PART_NAME_MAX + 1];
 };
 
-typedef size_t (*partsys_ident_t)(bootmedia_t *media);
+typedef diskoff_t (*partsys_ident_t)(bootmedia_t *media);
 typedef partition_t (*partsys_read_t)(bootmedia_t *media, diskoff_t part_index);
 
 // Abstract partition system.
@@ -60,6 +60,13 @@ struct partsys {
 extern partsys_t *partsys_first;
 // Last partition system.
 extern partsys_t *partsys_last;
+// Number of partitioning systems.
+extern size_t     partsys_num;
+
+#ifdef ALLOW_UNPARTITIONED_MEDIA
+// Dummy partition system for unpartitioned media.
+extern partsys_t partsys_raw;
+#endif
 
 // Register a new partition system.
 // This should only be called from constructor functions.
