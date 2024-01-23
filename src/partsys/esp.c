@@ -182,7 +182,7 @@ static partition_t partsys_esp_read(bootmedia_t *media, diskoff_t part_index) {
     );
     mem_copy(part.name, entry.label, name_len);
     part.name[name_len] = 0;
-    part.flags.bootable = entry.type == PART_TYPE_APP;
+    part.flags.bootable = entry.type == PART_TYPE_APP || entry.type == PART_TYPE_APPFS;
 
     return part;
 }

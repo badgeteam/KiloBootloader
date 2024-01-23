@@ -76,6 +76,8 @@ static bool bootprotocol_esp_ident(file_t *file) {
 
 // ESP boot function.
 static bool bootprotocol_esp_boot(file_t *file) {
+    logk(LOG_INFO, "Trying ESP boot protocol");
+
     // Try to read the header.
     esp_boot_hdr_t header;
     if (file->read(file, 0, sizeof(header), &header) != sizeof(header)) {
@@ -129,6 +131,7 @@ static bool bootprotocol_esp_boot(file_t *file) {
                 segs[i].vaddr,
                 segs[i].vaddr + segs[i].length
             );
+            return false;
         }
     }
 

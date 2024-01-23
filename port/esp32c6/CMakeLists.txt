@@ -26,7 +26,7 @@ target_compile_definitions(${target} PUBLIC -DHAS_PARTSYS_ESP)
 # Enable AppFS file system.
 target_compile_definitions(${target} PUBLIC -DHAS_FILESYS_APPFS)
 # Allow unformatted partitions.
-target_compile_definitions(${target} PUBLIC -DALLOW_UNFORMATTED_PARTITION)
+# target_compile_definitions(${target} PUBLIC -DALLOW_UNFORMATTED_PARTITION)
 
 # Enable ESP image format.
 target_compile_definitions(${target} PUBLIC -DHAS_BOOTPROTOCOL_ESP -DESP_CHIP_ID=0x000D)

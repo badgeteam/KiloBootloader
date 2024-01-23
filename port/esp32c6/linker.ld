@@ -21,6 +21,9 @@ SECTIONS
 	__start_lpsram = 0x50000000;
 	__stop_lpsram  = 0x50004000;
 	
+	/* Application to bootloader data. */
+	tobootloader = __start_lpsram;
+	
 	/* ROM symbols. */
 	INCLUDE esp32c6.rom.ld
 	

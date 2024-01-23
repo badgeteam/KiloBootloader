@@ -38,16 +38,14 @@ struct filesys_type {
 
 // Mounted filesystem information.
 struct filesys {
-    // Filesystem type.
-    filesys_type_t *type;
     // Parent partition.
-    partition_t    *part;
+    partition_t *part;
     // Sector size, if any.
-    diskoff_t       sect_size;
+    diskoff_t    sect_size;
     // Active filesystem header, if any.
-    int             active_header;
+    int          active_header;
     // Active FAT, if any.
-    int             active_fat;
+    int          active_fat;
 };
 
 // Abstract file handle.
@@ -64,6 +62,10 @@ struct file {
     int         inode;
     // File first sector number, if any.
     diskoff_t   first_sec;
+    // File current offset, if any.
+    diskoff_t   cur_off;
+    // File current sector number, if any.
+    diskoff_t   cur_sec;
 };
 
 
