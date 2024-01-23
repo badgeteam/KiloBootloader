@@ -23,6 +23,8 @@ typedef struct partsys partsys_t;
 typedef struct partition partition_t;
 // Partition information.
 struct partition {
+    // Parent media.
+    bootmedia_t *media;
     // Partition flags.
     struct {
         // Partition is bootable.

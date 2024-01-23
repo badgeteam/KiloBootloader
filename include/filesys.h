@@ -19,8 +19,8 @@ typedef struct file         file_t;
 
 
 
-typedef bool (*filesys_ident_t)(bootmedia_t *media, partition_t *part);
-typedef bool (*filesys_read_t)(bootmedia_t *media, partition_t *part, filesys_t *filesys, file_t *file);
+typedef bool (*filesys_ident_t)(partition_t *part);
+typedef bool (*filesys_read_t)(partition_t *part, filesys_t *filesys, file_t *file);
 typedef diskoff_t (*file_read_t)(file_t *file, diskoff_t offset, diskoff_t length, void *mem);
 typedef bool (*file_mmap_t)(file_t *file, diskoff_t offset, diskoff_t length, size_t vaddr);
 
@@ -76,3 +76,5 @@ extern filesys_type_t *filesys_last;
 // Register a new filesystem type.
 // This should only be called from constructor functions.
 void filesys_register(filesys_type_t *protocol);
+// Make a raw file for a partition.
+void filesys_make_raw(partition_t *part, filesys_t *filesys, file_t *file);

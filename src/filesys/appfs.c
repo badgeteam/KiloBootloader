@@ -58,9 +58,10 @@ typedef struct {
 
 
 // Try to identify a filesystem.
-static bool filesys_appfs_ident(bootmedia_t *media, partition_t *part) {
+static bool filesys_appfs_ident(partition_t *part) {
+    bootmedia_t *media = part->media;
     // Check metadata 0.
-    char id[sizeof(appfs_magic)];
+    char         id[sizeof(appfs_magic)];
     if (media->read(media, part->offset, sizeof(appfs_magic), id) != sizeof(appfs_magic)) {
         logk(LOG_WARN, "Too few bytes read from media (header 0)");
         return false;
@@ -83,11 +84,12 @@ static bool filesys_appfs_ident(bootmedia_t *media, partition_t *part) {
 }
 
 // Try to open the kernel file on this filesystem.
-static bool filesys_appfs_read(bootmedia_t *media, partition_t *part, filesys_t *filesys, file_t *file) {
+static bool filesys_appfs_read(partition_t *part, filesys_t *filesys, file_t *file) {
+    bootmedia_t *media = part->media;
     // Headers valid.
-    bool        hdr0_valid, hdr1_valid;
+    bool         hdr0_valid, hdr1_valid;
     // Header data.
-    appfs_hdr_t hdr0, hdr1;
+    appfs_hdr_t  hdr0, hdr1;
 
     // Read headers.
     if (media->read(media, part->offset, sizeof(appfs_hdr_t), &hdr0) != sizeof(appfs_hdr_t)) {
