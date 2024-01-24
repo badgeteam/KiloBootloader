@@ -81,7 +81,6 @@ static bool read_fat(filesys_t *filesys, uint8_t index, appfs_fat_t *fat) {
 // Go to the correct on-disk location for a file page.
 static bool get_sect(file_t *file, uint8_t off) {
     appfs_fat_t fat;
-    uint8_t     f0ff = file->cur_off;
     if (off < file->cur_off) {
         // Rewind to beginning.
         file->cur_off = 0;
