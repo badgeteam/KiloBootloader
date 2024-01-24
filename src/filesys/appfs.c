@@ -3,6 +3,8 @@
 
 #ifdef HAS_FILESYS_APPFS
 
+#include "filesys/appfs.h"
+
 #include "attributes.h"
 #include "badge_strings.h"
 #include "filesys.h"
@@ -59,11 +61,7 @@ typedef struct {
     uint8_t  _reserved[8];
 } appfs_fat_t;
 
-// To bootloader data.
-extern struct {
-    uint64_t appfs_magic;
-    uint8_t  app;
-} tobootloader;
+extern tobootloader_t tobootloader;
 
 
 
@@ -237,9 +235,10 @@ static bool filesys_appfs_read(partition_t *part, filesys_t *filesys, file_t *fi
     }
 
     // Validate selected file handle.
-    // if (tobootloader.appfs_magic != APPFS_TOBOOTLOADER_MAGIC)
-    //     return false;
-    tobootloader.app = 0;
+    if (tobootloader.appfs_magic != APPFS_TOBOOTLOADER_MAGIC)
+        return false;
+    if (tobootloader.app == 255)
+        return false;
 
     // Construct handles.
     filesys->part       = part;
