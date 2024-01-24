@@ -36,9 +36,10 @@ void esp_rom_delay_us(uint32_t us);
 // Enable ESP32C6 PLL.
 static void c6_enable_pll() {
     // Enable PLL.
-    PMU.imm.clk_power.tie_low_xpd_bb_i2c       = true;
-    PMU.imm.clk_power.tie_low_xpd_bbpll_i2c    = true;
-    PMU.imm.clk_power.tie_low_global_bbpll_icg = true;
+    PMU.imm.clk_power.tie_high_xpd_bb_i2c       = true;
+    PMU.imm.clk_power.tie_high_xpd_bbpll        = true;
+    PMU.imm.clk_power.tie_high_xpd_bbpll_i2c    = true;
+    PMU.imm.clk_power.tie_high_global_bbpll_icg = true;
 
     // Calibrate PLL.
     MODEM_LPCON.clk_conf.clk_i2c_mst_en = true;
@@ -98,12 +99,12 @@ static void c6_init_clocks() {
     PMU.lp_sys[PMU_MODE_HP_ACTIVE].regulator0.dbias = 26;
     PCR.mspi_clk_conf.mspi_fast_hs_div_num          = 5;
 
-    // // Enable the PLL.
-    // c6_enable_pll();
-    // // Set CPU clock to PLL at 160MHz.
-    // PCR.cpu_freq_conf.cpu_hs_div_num = 0;
-    // PCR.sysclk_conf.soc_clk_sel      = 1;
-    // esp_rom_set_cpu_ticks_per_us(160);
+    // Enable the PLL.
+    c6_enable_pll();
+    // Set CPU clock to PLL at 160MHz.
+    PCR.cpu_freq_conf.cpu_hs_div_num = 0;
+    PCR.sysclk_conf.soc_clk_sel      = 1;
+    esp_rom_set_cpu_ticks_per_us(160);
 
     // Select RTC clock sources.
     PMU.lp_sys[PMU_MODE_LP_ACTIVE].clk_power.xpd_fosc = true;
