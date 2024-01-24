@@ -5,6 +5,9 @@
 
 #include <stdint.h>
 
+// AppFS to bootloader magic.
+#define APPFS_TOBOOTLOADER_MAGIC 0x89778e48441c5665
+
 // To bootloader data.
 typedef struct {
     uint64_t appfs_magic;

@@ -12,9 +12,6 @@
 
 
 
-// AppFS to bootloader magic.
-#define APPFS_TOBOOTLOADER_MAGIC 0x89778e48441c5665
-
 // Number of data pages.
 #define PAGES     255
 // Size of each data page.
@@ -254,6 +251,9 @@ static bool filesys_appfs_read(partition_t *part, filesys_t *filesys, file_t *fi
     if (!read_fat(filesys, file->first_sec, &fat))
         return false;
     file->size = fat.size;
+
+    // Discard app.
+    tobootloader.app = 255;
 
     return true;
 }

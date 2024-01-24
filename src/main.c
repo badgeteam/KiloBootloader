@@ -44,6 +44,8 @@ void basic_runtime_init() {
 #endif
 // Number of discovered partitions.
 size_t      partnum;
+// Partition boot order.
+size_t      ordertab[PARTTAB_SIZE];
 // Global partition list.
 partition_t parttab[PARTTAB_SIZE];
 
@@ -141,16 +143,28 @@ static void bootstrap() {
     register_partitions();
     logkf(LOG_INFO, "Found %{size;d} bootable partition%{c}", partnum, partnum != 1 ? 's' : 0);
 
-    // TODO: Determine boot order.
+    // Determine boot order.
+    for (size_t x = 0; x < partnum; x++) {
+        size_t highest_pri   = PART_PRIO_MIN;
+        size_t highest_index = 0;
+        for (size_t y = 0; y < partnum; y++) {
+            if (parttab[y].flags.bootable && parttab[y].prio <= highest_pri) {
+                highest_pri   = parttab[y].prio;
+                highest_index = y;
+            }
+        }
+        parttab[highest_index].flags.bootable = false;
+        ordertab[x]                           = highest_index;
+    }
 
     // Try to boot the partitions in order.
     for (size_t i = 0; i < partnum; i++) {
-        filesys_type_t *type = find_filesys(&parttab[i]);
+        filesys_type_t *type = find_filesys(&parttab[ordertab[i]]);
         if (!type)
             continue;
         filesys_t filesys;
         file_t    file;
-        if (!type->read(&parttab[i], &filesys, &file))
+        if (!type->read(&parttab[ordertab[i]], &filesys, &file))
             continue;
         try_file(&file);
     }

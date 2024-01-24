@@ -11,6 +11,13 @@
 // Abstract partition system.
 typedef struct partsys partsys_t;
 
+// Default partition priority.
+#define PART_PRIO_DEFAULT (SIZE_MAX / 2)
+// Maximum partition priority.
+#define PART_PRIO_MAX     0
+// Minimum partition priority.
+#define PART_PRIO_MIN     SIZE_MAX
+
 #include "bootmedia.h"
 
 #include <stdbool.h>
@@ -35,6 +42,8 @@ struct partition {
     diskoff_t offset;
     // Length on disk.
     diskoff_t length;
+    // Partition boot priority, 0 is highest.
+    size_t    prio;
     // Partition name.
     char      name[PART_NAME_MAX + 1];
 };

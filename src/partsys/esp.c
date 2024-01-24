@@ -6,6 +6,7 @@
 #include "badge_strings.h"
 #include "log.h"
 #include "partsys.h"
+#include "port.h"
 
 
 
@@ -183,6 +184,7 @@ static partition_t partsys_esp_read(bootmedia_t *media, diskoff_t part_index) {
     mem_copy(part.name, entry.label, name_len);
     part.name[name_len] = 0;
     part.flags.bootable = entry.type == PART_TYPE_APP || entry.type == PART_TYPE_APPFS;
+    part.prio           = PART_PRIO_DEFAULT - 10 * (entry.type == PART_TYPE_APPFS);
 
     return part;
 }
