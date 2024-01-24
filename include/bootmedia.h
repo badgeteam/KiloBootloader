@@ -11,10 +11,14 @@
 // Bootable media position.
 typedef int64_t diskoff_t;
 #define FMT_TYPE_DISKOFF "i64"
+#define DISKOFF_MAX INT64_MAX
+#define DISKOFF_MIN INT64_MIN
 #else
 // Bootable media position.
 typedef int32_t diskoff_t;
 #define FMT_TYPE_DISKOFF "i32"
+#define DISKOFF_MAX INT32_MAX
+#define DISKOFF_MIN INT32_MIN
 #endif
 
 // Abstract bootable device.
@@ -28,6 +32,8 @@ typedef struct bootmedia bootmedia_t;
 typedef diskoff_t (*bootmedia_read_t)(bootmedia_t *media, diskoff_t offset, diskoff_t length, void *mem);
 // Bootable media memory map function.
 typedef bool (*bootmedia_mmap_t)(bootmedia_t *media, diskoff_t offset, diskoff_t length, size_t vaddr);
+// Memory map page size function.
+typedef diskoff_t (*bootmedia_page_t)(bootmedia_t *media, diskoff_t *page_size);
 
 // Abstract bootable device.
 struct bootmedia {
@@ -39,6 +45,8 @@ struct bootmedia {
     bootmedia_read_t read;
     // Optional memory map function.
     bootmedia_mmap_t mmap;
+    // Memory map page size function.
+    bootmedia_page_t page;
     // Size in bytes.
     diskoff_t        size;
     // Detected partitioning system, if any.

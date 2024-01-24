@@ -212,17 +212,22 @@ def parse(raw, name, desc=None, prefix="") -> Peripheral:
         
         while True:
             # Field description comment.
-            m_field = re.match("\n?/\\* "+prefix+"(\\w+).+?bitpos:\\[([0-9]+)(?::([0-9]+))?\\].+?\\*/\n", raw)
+            m_field = re.match("\n?/\\*+\\s*"+prefix+"(\\w+).+?bitpos:\\s*\\[([0-9]+)(?::([0-9]+))?\\].*?\\*+/\n", raw, re.S)
             if not m_field: break
             raw = raw[m_field.end():]
             m_desc  = re.match("\n?/\\*(?:description:)? ?((?:.|\n)+?).?\\*/\n", raw)
-            if not m_desc: break
-            raw = raw[m_desc.end():]
+            if not m_desc:
+                if m_desc := re.match(".+?\\*+/\n", raw, re.S):
+                    raw = raw[m_desc.end():]
+                desc = ""
+            else:
+                desc = m_desc.group(1)
+                raw = raw[m_desc.end():]
             
             if m_field.group(3):
-                reg.add_field(Field(m_field.group(1).lower(), int(m_field.group(3)), int(m_field.group(2)) - int(m_field.group(3)) + 1, m_desc.group(1).replace("\n", "")))
+                reg.add_field(Field(m_field.group(1).lower(), int(m_field.group(3)), int(m_field.group(2)) - int(m_field.group(3)) + 1, desc.replace("\n", "")))
             else:
-                reg.add_field(Field(m_field.group(1).lower(), int(m_field.group(2)), 1, m_desc.group(1).replace("\n", "")))
+                reg.add_field(Field(m_field.group(1).lower(), int(m_field.group(2)), 1, desc.replace("\n", "")))
             
             # Skip defines.
             while m := re.match("\n?#define\\s.+", raw):

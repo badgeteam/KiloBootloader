@@ -25,8 +25,22 @@ SECTIONS
 	tobootloader = __start_lpsram;
 	
 	/* ROM symbols. */
+	INCLUDE esp32c6.rom.newlib.ld
+	INCLUDE esp32c6.rom.net80211.ld
+	INCLUDE esp32c6.rom.heap.ld
 	INCLUDE esp32c6.rom.ld
-	
+	INCLUDE esp32c6.rom.newlib-normal.ld
+	INCLUDE esp32c6.rom.spiflash.ld
+	INCLUDE esp32c6.rom.pp.ld
+	INCLUDE esp32c6.rom.libgcc.ld
+	INCLUDE esp32c6.rom.version.ld
+	INCLUDE esp32c6.rom.phy.ld
+	INCLUDE esp32c6.rom.rvfp.ld
+	INCLUDE esp32c6.rom.coexist.ld
+	INCLUDE esp32c6.rom.wdt.ld
+	INCLUDE esp32c6.rom.api.ld
+	INCLUDE esp32c6.peripherals.ld
+
 	__section_alignment = 16;
 	
 	

@@ -39,7 +39,7 @@ static diskoff_t bootmedia_xip_read(bootmedia_t *media, diskoff_t offset, diskof
         }
 
         // Page read start address.
-        size_t start = (size_t)(offset + read) % page_size;
+        size_t start = (size_t)offset % page_size;
         // Page read end address.
         size_t end   = start + length > page_size ? page_size : start + length;
         // Copy from the memory-mapped page.
@@ -71,12 +71,28 @@ static bool bootmedia_xip_mmap(bootmedia_t *media, diskoff_t offset, diskoff_t l
     );
 }
 
+// Memory map page size function.
+diskoff_t bootmedia_xip_page(bootmedia_t *media, diskoff_t *page_size) {
+    (void)media;
+    if (page_size) {
+        if (*page_size < XIP_REGION_MIN_SIZE) {
+            xip_set_page_size(XIP_REGION_MIN_SIZE);
+        } else if (*page_size > XIP_REGION_MAX_SIZE) {
+            xip_set_page_size(XIP_REGION_MAX_SIZE);
+        } else {
+            xip_set_page_size(*page_size);
+        }
+    }
+    return xip_get_page_size();
+}
+
 
 
 // XIP boot media.
 static bootmedia_t xip_media = {
     .read = bootmedia_xip_read,
     .mmap = bootmedia_xip_mmap,
+    .page = bootmedia_xip_page,
 };
 
 // Register XIP boot media.

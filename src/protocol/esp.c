@@ -77,6 +77,7 @@ static bool bootprotocol_esp_ident(file_t *file) {
 // ESP boot function.
 static bool bootprotocol_esp_boot(file_t *file) {
     logk(LOG_INFO, "Trying ESP boot protocol");
+    bootmedia_t *media = file->filesys->part->media;
 
     // Try to read the header.
     esp_boot_hdr_t header;
@@ -94,9 +95,12 @@ static bool bootprotocol_esp_boot(file_t *file) {
         logk(LOG_WARN, "ESP image has SHA256 appended, ignoring");
     }
 
+    // Lowest common denominator for page size.
+    diskoff_t page_size = (DISKOFF_MAX >> 1) + 1;
     // Read segment headers.
-    diskoff_t seg_off = 24;
+    diskoff_t seg_off   = 24;
     for (size_t i = 0; i < header.segments; i++) {
+        // Read a segment entry.
         if (file->read(file, seg_off, sizeof(esp_boot_seg_t), &segs[i]) != sizeof(esp_boot_seg_t)) {
             logk(LOG_ERROR, "Too few bytes read from media (segment)");
             return false;
@@ -112,6 +116,27 @@ static bool bootprotocol_esp_boot(file_t *file) {
             segs_paddr[i],
             segs[i].vaddr
         );
+
+        if (IS_XIP_RANGE(segs[i].vaddr, segs[i].length)) {
+            // Find its maximum allowable page size.
+            uint32_t  eq_mask       = segs[i].vaddr ^ segs_paddr[i];
+            diskoff_t seg_page_size = 1;
+            while (!(eq_mask & 1)) {
+                eq_mask       >>= 1;
+                seg_page_size <<= 1;
+            }
+
+            // Update the maximum allowable page size.
+            if (page_size > seg_page_size) {
+                page_size = seg_page_size;
+            }
+        }
+    }
+
+    // Update page size.
+    if (media->page) {
+        page_size = media->page(media, &page_size);
+        logkf(LOG_INFO, "Using page size %{" FMT_TYPE_DISKOFF ";d}", page_size);
     }
 
     // Map segments.
@@ -164,8 +189,8 @@ static bool bootprotocol_esp_boot(file_t *file) {
 
     // Hand over control.
     logkf(LOG_INFO, "Jumping to 0x%{size;x}", header.entry);
-    asm volatile("csrc mstatus, 8");
-    asm volatile("csrw mie, 0");
+    if (!port_pre_handover())
+        return false;
     ((void (*)())header.entry)();
 
     return true;

@@ -155,9 +155,11 @@ bool xip_map(xip_range_t range, bool override) {
     } else if (range.rom_addr % page_size != range.map_addr % page_size) {
         logkf(
             LOG_ERROR,
-            "Mismatched sub-page address: paddr %{size;x} vs vaddr %{size;x}",
+            "Mismatched sub-page address: paddr %{size;x} vs vaddr %{size;x} (mapping %{size;x} to %{size;x})",
             range.rom_addr % page_size,
-            range.map_addr % page_size
+            range.map_addr % page_size,
+            range.rom_addr,
+            range.map_addr
         );
         return false;
     }
